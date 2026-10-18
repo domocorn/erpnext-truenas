@@ -56,3 +56,9 @@ See [the roadmap](docs/ROADMAP.md) for catalog and HexOS work.
 The upstream official image supplies ERPNext/Frappe; their licenses apply to that
 software. Review repository licensing before public contributions. No production
 credentials or configuration from the author's live installation are included.
+
+## Backup and restore lab
+
+Follow [the restore acceptance test](docs/RESTORE-TEST.md) after the initial
+installation tests pass. This manual lab procedure does not provide automated
+upgrade or restore support.
