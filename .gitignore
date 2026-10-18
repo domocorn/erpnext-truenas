@@ -1,1 +1,11 @@
+generated/
+.venv/
+__pycache__/
 .env
+*.sql
+*.sql.gz
+*.tgz
+*.tar
+*.tar.gz
+site_config.json
+common_site_config.json
