@@ -1,5 +1,8 @@
 # Test record
 
+Deployed initial ERPNext Setup -> Created fake company and added some fake data:
+	Database stayed intact through container restarts, server restarts, and opening and saving the YAML with no changes made
+
 ## Author-side validation
 
 Python compilation, generated YAML round-trip, and local unit tests are run when
