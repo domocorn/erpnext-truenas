@@ -31,9 +31,9 @@ Restore validation is pending. Follow docs/RESTORE-TEST.md.
 
 | Check | Result |
 |---|---|
-| Restore to separate app | Pending |
-| Customer and Issue restored | Pending |
-| Attachment content verified | Pending |
-| Source/destination isolation | Pending |
-| Restored app restart | Pending |
+| Restore to separate app | Pending | PASS
+| Customer and Issue restored | Pending | PASS
+| Attachment content verified | Pending | PASS
+| Source/destination isolation | Pending | PASS
+| Restored app restart | Pending | PASS
 | Encrypted setting decryption | Not tested |
