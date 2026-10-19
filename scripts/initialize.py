@@ -6,6 +6,45 @@ import re
 import subprocess
 
 
+def upgrade_guard(folder):
+    expected = os.environ.get('EXPECTED_UPGRADE_OPERATION')
+    path = folder / '.nas-upgrade-state.json'
+    if not path.exists():
+        if expected:
+            raise SystemExit('Upgrade backup/migration state missing; startup blocked.')
+        return
+    state = json.loads(path.read_text())
+    if not expected or state.get('operation') != expected:
+        raise SystemExit('Upgrade operation mismatch; startup blocked.')
+    if state.get('target') != os.environ.get('EXPECTED_UPGRADE_IMAGE'):
+        raise SystemExit('Upgrade target mismatch; startup blocked.')
+    if state.get('status') not in ('migrated', 'resumed'):
+        raise SystemExit('Migration has not succeeded; startup blocked.')
+
+
+def finish_upgrade(folder):
+    path = folder / '.nas-upgrade-state.json'
+    if not path.exists():
+        return
+    state = json.loads(path.read_text())
+    if state['status'] == 'resumed':
+        return
+    config_path = folder / 'site_config.json'
+    config = json.loads(config_path.read_text())
+    config['maintenance_mode'] = state['previous_maintenance']
+    config['pause_scheduler'] = state['previous_pause']
+    temporary = config_path.with_name('site_config.resume-tmp')
+    temporary.write_text(json.dumps(config, indent=2) + '\n')
+    temporary.chmod(0o600)
+    temporary.replace(config_path)
+    state['status'] = 'resumed'
+    temporary = path.with_suffix('.tmp')
+    temporary.write_text(json.dumps(state, indent=2) + '\n')
+    temporary.chmod(0o600)
+    temporary.replace(path)
+    print('Upgrade verified; previous maintenance/scheduler settings restored.', flush=True)
+
+
 def main():
     site = os.environ['SITE_NAME']
     if not re.fullmatch(r'[a-z0-9][a-z0-9.-]{0,120}', site) or '..' in site:
@@ -13,6 +52,7 @@ def main():
     root = Path('sites')
     marker = root / site / '.nas-initialized'
     pending = root / ('.nas-installing-' + site)
+    upgrade_guard(root / site)
 
     def bench(*args):
         return subprocess.run(['bench', *args], check=True, capture_output=False)
@@ -25,6 +65,7 @@ def main():
         apps = subprocess.check_output(['bench', '--site', site, 'execute', 'frappe.get_installed_apps'], text=True)
         if 'erpnext' not in json.loads(apps):
             raise SystemExit('Existing site is missing ERPNext')
+        finish_upgrade(root / site)
         print('Existing managed ERPNext site verified; skipping installation.', flush=True)
         return
     if not os.environ.get('ADMIN_PASSWORD') or not os.environ.get('DB_ROOT_PASSWORD'):

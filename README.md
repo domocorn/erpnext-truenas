@@ -62,3 +62,10 @@ credentials or configuration from the author's live installation are included.
 Follow [the restore acceptance test](docs/RESTORE-TEST.md) after the initial
 installation tests pass. This manual lab procedure does not provide automated
 upgrade or restore support.
+
+## Controlled upgrade rehearsal
+
+A staged lab-only upgrade generator is now available. It reads the exact installed
+private YAML and preserves credentials, volumes, infrastructure versions and web
+port. Follow [UPGRADE-TEST.md](docs/UPGRADE-TEST.md). This is not yet one-click
+updating or a validated real version transition. Do not run it on business data.

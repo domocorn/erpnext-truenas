@@ -37,3 +37,17 @@ Restore validation is pending. Follow docs/RESTORE-TEST.md.
 | Source/destination isolation | Pending | PASS
 | Restored app restart | Pending | PASS
 | Encrypted setting decryption | Not tested |
+
+## Backup and upgrade
+
+| Check | Result |
+|---|---|
+| Backup job produced four components and preserved config | Pending | PASS
+| Maintenance stages had no running normal services | Pending | PASS
+| Deliberate failure blocked guarded resume | Pending | PASS
+| Same-version migration completed | Pending | PASS
+| Resume restored records and attachment | Pending | PASS
+| App restart after resume | Pending | PASS
+| Disabled scheduler remained disabled | Pending | PASS
+| Real version-to-version upgrade | NOT TESTED |
+| Recovery from an actual mid-migration failure | NOT TESTED |
