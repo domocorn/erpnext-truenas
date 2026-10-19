@@ -27,46 +27,52 @@ compatibility; Docker is unavailable in the authoring environment.
 ## Backup and restore
 
 Backup command completed and four expected files were listed on 2026-10-18.
-Restore validation is pending. Follow docs/RESTORE-TEST.md.
+Restore validation passed in the test VM, as reported by the tester. See docs/RESTORE-TEST.md for the procedure.
 
 | Check | Result |
 |---|---|
-| Restore to separate app | Pending | PASS
-| Customer and Issue restored | Pending | PASS
-| Attachment content verified | Pending | PASS
-| Source/destination isolation | Pending | PASS
-| Restored app restart | Pending | PASS
+| Restore to separate app | PASS |
+| Customer and Issue restored | PASS |
+| Attachment content verified | PASS |
+| Source/destination isolation | PASS |
+| Restored app restart | PASS |
 | Encrypted setting decryption | Not tested |
 
 ## Backup and upgrade
 
 | Check | Result |
 |---|---|
-| Backup job produced four components and preserved config | Pending | PASS
-| Maintenance stages had no running normal services | Pending | PASS
-| Deliberate failure blocked guarded resume | Pending | PASS
-| Same-version migration completed | Pending | PASS
-| Resume restored records and attachment | Pending | PASS
-| App restart after resume | Pending | PASS
-| Disabled scheduler remained disabled | Pending | PASS
-| Real version-to-version upgrade | NOT TESTED |
+| Backup job produced four components and preserved config | PASS |
+| Maintenance stages had no running normal services | PASS |
+| Deliberate failure blocked guarded resume | PASS |
+| Same-version migration completed | PASS |
+| Resume restored records and attachment | PASS |
+| App restart after resume | PASS |
+| Disabled scheduler remained disabled | PASS |
+| Real version-to-version upgrade | PASS: 16.51.0 → 16.51.1; see below |
 | Recovery from an actual mid-migration failure | NOT TESTED |
 
 ## Real upgrade
 
-| Prior version: erpnext - 16.51.0 | frappe - 16.52.0
+Before upgrade: ERPNext **16.51.0**, Frappe **16.52.0**.
+
 | Actual version upgrade check | Result / evidence |
 |---|---|
-| New app initialized on ERPNext 16.51.0 | Pending | PASS
-| Pre-upgrade Frappe version | Pending | PASS
-| Source-image backup completed | Pending | PASS
-| No normal services running during offline stages | Pending | PASS
-| Intentional failure blocked startup | Pending | PASS
-| Migration with 16.51.1 completed | Pending | PASS
-| Post-upgrade ERPNext/site versions | Pending | 16.51.1
-| Post-upgrade Frappe version | Pending | 16.52.0
-| Customer, Issue and attachment survived | Pending | PASS
-| New record saved after upgrade | Pending | PASS
-| Optional draft invoice/Item survived | Pending or N/A | N/A
-| App and VM restart preserved upgraded site | Pending | PASS
-| Other apps remained isolated | Pending | PASS
+| New app initialized on ERPNext 16.51.0 | PASS |
+| Pre-upgrade Frappe version | PASS |
+| Source-image backup completed | PASS |
+| No normal services running during offline stages | PASS |
+| Intentional failure blocked startup | PASS |
+| Migration with 16.51.1 completed | PASS |
+| Post-upgrade ERPNext/site versions | 16.51.1 |
+| Post-upgrade Frappe version | 16.52.0 |
+| Customer, Issue and attachment survived | PASS |
+| New record saved after upgrade | PASS |
+| Optional draft invoice/Item survived | N/A |
+| App and VM restart preserved upgraded site | PASS |
+| Other apps remained isolated | PASS |
+
+Evidence is tester-reported from the TrueNAS 25.10.7 VM; raw logs were not independently inspected.
+The real upgrade was one patch transition. Actual mid-migration failure recovery
+and encrypted-setting decryption remain untested. Optional draft-invoice testing
+was not performed. No claim of general or major-version upgrade compatibility is made.
