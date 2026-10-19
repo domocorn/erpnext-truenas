@@ -96,7 +96,8 @@ README step 5 passed after the frontend fix.
 - Existing apps remained unchanged.
 
 The user reported step 5 as passed; raw logs were not independently inspected.
-Whether custom-app mode displayed a Web Portal button was not specified.
+The user confirmed the Web Portal button appeared and worked, and the Notes
+section appeared on the right-hand side.
 
 Local Windows checks performed by Codex on 2026-10-18, using Python 3.13.9
 and apps checkout 85c0b1f21b9ad4e9c667a170a02b5663b9236287.
@@ -129,3 +130,58 @@ The private VM YAML also passed Compose config validation without starting it.
 Full metadata generation remains blocked by the empty icon URL; item.yaml was
 generated with the upstream helper. These are not hosted CI or catalog-update
 test results. See catalog-dev/VALIDATION.md for the validator digest and scope.
+
+### Runtime healthcheck revision (local WSL)
+
+Eight Linux tests passed. A separate WSL deployment initialized successfully;
+all six runtime services plus MariaDB and both Redis services reported healthy.
+Worker and scheduler probes rejected a queue-Redis outage, with recovery after
+restart. Final probes executed successfully inside the exact ERPNext image.
+Official render/schema and Compose validation repeated successfully.
+
+A separate private healthchecks-ready.yaml preserves the original installed
+credentials, storage and images.
+
+### Runtime healthcheck revision (TrueNAS VM)
+
+On 2026-10-19 the user reported completing HEALTHCHECK-TEST.md checks 1-5 with
+normal operation: runtime health, portal/login, existing customer/Issue/attachment,
+and app stop/start persistence passed. This is user-reported evidence; raw health
+logs and the VM snapshot were not independently inspected. Catalog upgrades and
+migration failure recovery remain untested for this storage layout.
+
+### Runtime upgrade guard foundation (local WSL)
+
+Eleven Linux tests passed, including migration-state rejection, shared/exclusive
+lock lifetime, signal forwarding, and preservation/idempotence of the same-image
+update. Real container checks verified runtime blocks exclusive access, stopping
+all runtime releases it, and a held exclusive lock blocks runtime startup.
+Official rendering, schema and Compose validation passed for the new revision.
+Actual catalog migration remains pending; see catalog-dev/LIFECYCLE-REVIEW.md.
+
+### Runtime upgrade guard foundation (TrueNAS VM)
+
+On 2026-10-19 the user reported all RUNTIME-GUARD-TEST.md checks passed:
+same-image guard rollout, healthy runtime/dependencies, portal/login and assets,
+existing customer/Issue/attachment, app stop/start persistence, and unchanged
+YAML save. Results are user-reported; raw VM logs and the snapshot were not
+independently inspected. No catalog database migration, image upgrade, offline
+backup or migration-failure recovery is established by this test.
+
+### Catalog-layout same-version rehearsal (local WSL)
+
+Sixteen Linux tests passed. Two complete operations in the disposable WSL lab
+passed offline backup, deliberate failure before migration, blocked resume with
+no runtime started, same-version bench migrate, and guarded resume. The second
+operation was generated from the first successful resume and retained paused
+scheduling. Backup refused live guarded runtime; completed migration did not
+repeat. Interrupted-command and corrupt-backup refusal passed unit tests.
+
+The fictional ToDo and private attachment survived migration/resume. SQL gzip and
+private tar fixture contents and backup checksums were verified. All nine
+long-running services were healthy after resume. The lab was stopped afterward.
+Private VM stages were generated and Compose-validated without deployment.
+
+VM rehearsal is pending: catalog-dev/CATALOG-REHEARSAL-TEST.md. This does not test
+independent restore, real patch upgrade, actual mid-patch failure recovery,
+encrypted credentials or native one-click catalog upgrades.

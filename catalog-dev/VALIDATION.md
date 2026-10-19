@@ -65,6 +65,80 @@ before official hashing, because the upstream hash includes every file.
 Only app.yaml, item.yaml and the generated ERPNext library were copied back.
 The main checkout's global library hash file and unrelated apps were not changed.
 
-Still pending: CDN icon and full metadata generation; application-container CI
-startup and health probes; immutable-image policy review; catalog update design
-and failure/recovery tests. The tested VM deployment was not changed by this work.
+Still pending: CDN icon and full metadata generation; verified digest transition;
+catalog update design and failure/recovery
+tests. The tested VM deployment was not changed by this work.
+
+## Healthcheck revision
+
+- Eight Linux tests passed, including rejection of stale/wrong-host/wrong-queue
+  worker heartbeats, acceptance of idle workers, dependency failure and missing
+  scheduler lock, and preservation/idempotence of the health-only YAML update.
+- A disposable WSL stack initialized using fixture credentials and dedicated
+  /var/tmp storage. All nine persistent services reported healthy.
+- Final probes passed inside all six runtime containers using the exact pulled
+  ERPNext v16.51.1 image. Both worker probes and scheduler rejected a stopped
+  queue Redis; services recovered after Redis restart. Final worker outage check
+  emitted only the exception type, without upstream connection-URL logging.
+- Official render-only, schema and Compose checks repeated for the revision.
+- Private healthchecks-ready.yaml prepared from the existing installed YAML,
+  retaining credentials, storage and images. Subsequent VM pass is recorded below.
+
+See HEALTHCHECK-TEST.md for the next VM test. Heartbeats do not prove successful
+job execution; the scheduler lock does not detect a hung loop. Paused scheduling
+is valid and is never changed by a probe. Docker marks unhealthy status but does
+not automatically restart an unhealthy container. The local lab is stopped after
+testing, retaining its disposable data.
+
+## Same-image runtime guard revision
+
+Healthcheck VM rollout: user reported HEALTHCHECK-TEST.md checks 1-5 passed on
+2026-10-19. Raw VM logs were not independently inspected.
+
+Added shared runtime locks, per-start site/image/upgrade-state verification, and
+a non-root supervisor preserving the official image entrypoint and forwarding
+shutdown signals. No database migration or marker/image transition is enabled.
+
+Eleven Linux tests passed. Real WSL container checks verified that running
+runtime blocks exclusive access, stopped runtime releases it, and exclusive
+access blocks new runtime startup. Official render/schema/Compose checks were
+repeated. Private runtime-guards YAML preserves the exact healthcheck baseline's
+data services, storage, credentials and images. User subsequently reported all
+RUNTIME-GUARD-TEST.md checks passed on 2026-10-19, including unchanged YAML save,
+app restart, healthy services and retained data. Raw VM logs were not independently
+inspected. This is not a catalog upgrade test.
+
+All nine long-running services reported healthy after the guarded lab restart;
+all six runtime probes also passed when invoked directly. The local lab was
+stopped afterward. A redundant latest-image refresh stalled and was cancelled;
+final official renderer/schema functions passed using the cached official image.
+
+## Catalog same-version rehearsal
+
+Added catalog-specific tooling, separate from scripts/prepare_upgrade.py and its
+standalone storage assumptions. Only exact same-image v16 rehearsals are allowed.
+The five-stage generator preserves installed images, credentials and mounts,
+requires runtime guards, and refuses output overwrite. Backup/migration/resume
+hold the runtime lock exclusively. Recovery files are outside the site's private
+files tree; checksums are verified before migration and resume. Migration state
+is persisted before bench migrate and an interrupted migration cannot retry.
+
+Sixteen Linux tests passed (eleven catalog/runtime plus five rehearsal tests).
+The mocked interrupted-command test establishes state-machine refusal, not actual
+mid-patch database recovery. Corrupt backup and wrong-operation tests also passed.
+All five prepared private VM stages passed Docker Compose config validation.
+
+Two complete WSL rehearsal cycles passed: backup, deliberate pre-migration
+failure, blocked initializer/runtime, actual same-version migration and guarded
+resume. The second plan used the first successful resume YAML and preserved a
+deliberately paused scheduler. A completed migration was refused as a repeat
+(MIGRATION ALREADY COMPLETE). A backup attempted against active guarded runtime
+was rejected before operation state was created.
+
+Fictional ToDo and private File survived migration/resume; final backup gzip SQL
+and private tar contents contained those fixtures and all inventoried checksums
+matched. Nine persistent services and all runtime probes passed after resume.
+The lab was then stopped. These checks do not establish independent restore,
+encrypted credential recovery, image/patch upgrade, queue recovery, interrupted
+patch recovery or native catalog update support. VM rehearsal remains pending;
+follow CATALOG-REHEARSAL-TEST.md.

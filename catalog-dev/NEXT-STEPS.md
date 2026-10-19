@@ -9,6 +9,16 @@ library vendoring/hash, item.yaml generation, official app-scoped schema check,
 official CI render-only (metadata skipped), and Compose config validation.
 See VALIDATION.md for exact limits. Full metadata is blocked on the icon URL.
 
+HEALTHCHECK-TEST.md checks 1-5 passed in the user's VM on 2026-10-19.
+RUNTIME-GUARD-TEST.md checks 1-6 also passed in the user's VM on 2026-10-19.
+The same-image runtime guard baseline is now verified by user report.
+Catalog-layout offline backup, exclusive migration locking, same-version
+rehearsal and guarded failure/resume stages are now implemented and tested in
+the disposable WSL lab. Next VM procedure: CATALOG-REHEARSAL-TEST.md, using the
+five private files in generated/catalog-rehearsal-01/. Image changes and native
+one-click catalog upgrades remain blocked. See LIFECYCLE-REVIEW.md for context.
+IMAGE-REVIEW.md records observed digests and the marker transition constraint.
+
 ## Submission preparation
 
 - Use the official `ghcr.io/truenas/apps_validation` container for library
