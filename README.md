@@ -69,3 +69,11 @@ A staged lab-only upgrade generator is now available. It reads the exact install
 private YAML and preserves credentials, volumes, infrastructure versions and web
 port. Follow [UPGRADE-TEST.md](docs/UPGRADE-TEST.md). This is not yet one-click
 updating or a validated real version transition. Do not run it on business data.
+
+## Real patch-version upgrade test
+
+The installer generator accepts `--erpnext-version v16.51.0` for a fresh test
+installation. It refuses to overwrite an existing generated file. Follow
+[REAL-UPGRADE-TEST.md](docs/REAL-UPGRADE-TEST.md) for the isolated v16.51.0 to
+v16.51.1 test, with distinct numbered stages and explicit shutdown commands.
+Existing rehearsal filenames remain available for backwards compatibility.

@@ -70,11 +70,14 @@ def main():
     parser.add_argument('--from-config', required=True, type=Path)
     parser.add_argument('--target', required=True, help='Pinned tag, e.g. v16.51.1')
     parser.add_argument('--rehearsal', action='store_true')
+    parser.add_argument('--numbered-stages', action='store_true', help='Use distinct 01–05 filenames, including blocked-resume test')
     parser.add_argument('--output-dir', type=Path, default=Path('generated/upgrade'))
     args = parser.parse_args()
     source = yaml.safe_load(args.from_config.read_text())
     target = 'frappe/erpnext:' + args.target
     outputs = prepare(source, target, args.rehearsal)
+    if args.numbered_stages:
+        outputs = numbered_stages(outputs)
     # Never silently overwrite the operation IDs for an in-progress run.
     args.output_dir.mkdir(parents=True, exist_ok=False)
     for name, doc in outputs.items():
@@ -83,6 +86,16 @@ def main():
         path.chmod(0o600)
     print('Created backup, migration, deliberate failure, and guarded resume configurations.')
     print('Read docs/UPGRADE-TEST.md before applying. Stop the existing test app first.')
+
+
+def numbered_stages(outputs):
+    return {
+        '01-backup.yaml': outputs['01-backup.yaml'],
+        '02-simulated-failure.yaml': outputs['02-test-failure.yaml'],
+        '03-verify-startup-blocked.yaml': copy.deepcopy(outputs['03-resume.yaml']),
+        '04-migrate.yaml': outputs['02-migrate.yaml'],
+        '05-resume.yaml': outputs['03-resume.yaml'],
+    }
 
 
 if __name__ == '__main__':

@@ -10,7 +10,9 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def make_compose(site, port, admin, database):
+def make_compose(site, port, admin, database, erpnext_version='v16.51.1'):
+    if not re.fullmatch(r'v16\.\d+\.\d+', erpnext_version):
+        raise ValueError('Use a pinned v16 release, for example v16.51.0; floating tags are not supported')
     if not re.fullmatch(r'[a-z0-9][a-z0-9.-]{0,120}', site) or '..' in site:
         raise ValueError('Use a lowercase site name containing letters, digits, dots and hyphens')
     if not 1024 <= port <= 65535:
@@ -19,7 +21,7 @@ def make_compose(site, port, admin, database):
         raise ValueError('Use an administrator password of at least 12 characters')
     # Compose interpolates dollars even in quoted YAML. Escape literal credentials.
     literal = lambda value: value.replace('$', '$$')
-    image = 'frappe/erpnext:v16.51.1'
+    image = 'frappe/erpnext:' + erpnext_version
     base = dict(image=image, platform='linux/amd64', restart='unless-stopped',
                 volumes=['sites:/home/frappe/frappe-bench/sites', 'logs:/home/frappe/frappe-bench/logs'])
     ready = {'initializer': {'condition': 'service_completed_successfully'}}
@@ -83,16 +85,19 @@ def main():
     parser.add_argument('--site', default='erpnext.test')
     parser.add_argument('--port', type=int, default=18081)
     parser.add_argument('--output', default='generated/erpnext-test.yaml')
+    parser.add_argument('--erpnext-version', default='v16.51.1', help='Pinned v16 tag for a NEW installation')
     args = parser.parse_args()
+    if Path(args.output).exists():
+        raise SystemExit('Output already exists. Keep its credentials; choose a new output path for a new installation.')
     password = getpass.getpass('Initial ERPNext Administrator password (12+ characters): ')
     if password != getpass.getpass('Confirm password: '):
         raise SystemExit('Passwords do not match')
-    document = make_compose(args.site, args.port, password, secrets.token_urlsafe(36))
+    document = make_compose(args.site, args.port, password, secrets.token_urlsafe(36), args.erpnext_version)
     path = Path(args.output)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text('# PRIVATE: contains credentials. Do not commit or publish.\n' + yaml.safe_dump(document, sort_keys=False))
     path.chmod(0o600)
-    print(f'Created {path}. Install in the TEST TrueNAS VM as erpnext-test. Never use production storage.')
+    print(f'Created {path} using {args.erpnext_version}. Install as the NEW test app named in your test guide.')
 
 
 if __name__ == '__main__':

@@ -51,3 +51,22 @@ Restore validation is pending. Follow docs/RESTORE-TEST.md.
 | Disabled scheduler remained disabled | Pending | PASS
 | Real version-to-version upgrade | NOT TESTED |
 | Recovery from an actual mid-migration failure | NOT TESTED |
+
+## Real upgrade
+
+| Prior version: erpnext - 16.51.0 | frappe - 16.52.0
+| Actual version upgrade check | Result / evidence |
+|---|---|
+| New app initialized on ERPNext 16.51.0 | Pending | PASS
+| Pre-upgrade Frappe version | Pending | PASS
+| Source-image backup completed | Pending | PASS
+| No normal services running during offline stages | Pending | PASS
+| Intentional failure blocked startup | Pending | PASS
+| Migration with 16.51.1 completed | Pending | PASS
+| Post-upgrade ERPNext/site versions | Pending | 16.51.1
+| Post-upgrade Frappe version | Pending | 16.52.0
+| Customer, Issue and attachment survived | Pending | PASS
+| New record saved after upgrade | Pending | PASS
+| Optional draft invoice/Item survived | Pending or N/A | N/A
+| App and VM restart preserved upgraded site | Pending | PASS
+| Other apps remained isolated | Pending | PASS
