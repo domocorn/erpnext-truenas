@@ -4,7 +4,7 @@ import copy
 from pathlib import Path
 
 import yaml
-from render_catalog import render
+from render_catalog import render_legacy as render
 
 RUNTIME = ('backend', 'frontend', 'websocket', 'queue-short', 'queue-long', 'scheduler')
 

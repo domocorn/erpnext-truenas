@@ -34,8 +34,8 @@ def prepare(original, operation=None):
         raise ValueError('Invalid operation ID')
     services = original['services']
     image = services['backend']['image']
-    if not re.fullmatch(r'frappe/erpnext:v16\.\d+\.\d+', image):
-        raise ValueError('Pinned ERPNext v16 image required; digest transition not implemented')
+    if not re.fullmatch(r'frappe/erpnext:v16\.\d+\.\d+(?:@sha256:[a-f0-9]{64})?', image):
+        raise ValueError('ERPNext v16 image required; image changes are not supported')
     guard = original.get('configs', {}).get('catalog_runtime', {}).get('content', '')
     if '.catalog-runtime.lock' not in guard or 'LOCK_SH' not in guard:
         raise ValueError('Install and verify the runtime-guard revision first')
@@ -61,8 +61,17 @@ def prepare(original, operation=None):
     base = copy.deepcopy(original)
     base['configs']['catalog_rehearsal'] = {
         'content': (ROOT / 'rehearsal_job.py').read_text(encoding='utf-8').replace('$', '$$')}
+    base['configs']['catalog_queue_guard'] = {'content': (ROOT / 'queue_guard.py').read_text().replace('$', '$$')}
+    queue_mount = {'source': 'catalog_queue_guard', 'target': '/catalog/queue_guard.py', 'mode': 292}
     environment = {'SITE_NAME': site, 'OPERATION_ID': operation,
         'SOURCE_IMAGE': image, 'TARGET_IMAGE': image}
+    previous = services['initializer'].get('environment', {}).get('EXPECTED_UPGRADE_OPERATION')
+    if previous:
+        if not re.fullmatch(r'[a-f0-9]{32}', previous):
+            raise ValueError('Invalid previous operation ID')
+        environment['PREVIOUS_UPGRADE_OPERATION'] = previous
+    if services['bootstrap'].get('environment', {}).get('PINNING_GATE'):
+        raise ValueError('Use the independently recovered baseline for a new rehearsal')
     outputs = {}
     for filename, phase, failure in (
             ('01-backup.yaml', 'backup', '0'),
@@ -76,7 +85,7 @@ def prepare(original, operation=None):
         job.update(restart='no', entrypoint=['/home/frappe/frappe-bench/env/bin/python', '/catalog/rehearsal.py'],
             command=[], healthcheck={'disable': True},
             environment=dict(environment, UPGRADE_PHASE=phase, SIMULATE_FAILURE=failure),
-            configs=[{'source': 'catalog_rehearsal', 'target': '/catalog/rehearsal.py', 'mode': 292}],
+            configs=[{'source': 'catalog_rehearsal', 'target': '/catalog/rehearsal.py', 'mode': 292}, copy.deepcopy(queue_mount)],
             depends_on={name: {'condition': 'service_healthy'} for name in ('db', 'redis-cache', 'redis-queue')})
         if 'permissions' in document['services']:
             job['depends_on']['permissions'] = {'condition': 'service_completed_successfully'}
@@ -91,9 +100,9 @@ def prepare(original, operation=None):
     initializer['environment'].update(environment,
         EXPECTED_UPGRADE_OPERATION=operation, EXPECTED_UPGRADE_IMAGE=image)
     mounts = initializer['configs']
-    mounts[:] = [m for m in mounts if m.get('source') not in ('catalog_rehearsal', 'catalog_rehearsal_resume')]
+    mounts[:] = [m for m in mounts if m.get('source') not in ('catalog_rehearsal', 'catalog_rehearsal_resume', 'catalog_queue_guard')]
     mounts.extend([{'source': 'catalog_rehearsal', 'target': '/catalog/rehearsal.py', 'mode': 292},
-        {'source': 'catalog_rehearsal_resume', 'target': '/catalog/rehearsal-resume.py', 'mode': 292}])
+        {'source': 'catalog_rehearsal_resume', 'target': '/catalog/rehearsal-resume.py', 'mode': 292}, copy.deepcopy(queue_mount)])
     for name in RUNTIME:
         resume['services'][name]['environment']['EXPECTED_UPGRADE_OPERATION'] = operation
     outputs['03-verify-startup-blocked.yaml'] = copy.deepcopy(resume)

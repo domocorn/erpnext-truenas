@@ -14,7 +14,7 @@ from unittest.mock import patch
 
 import yaml
 from prepare_rehearsal import prepare
-from render_catalog import render
+from render_catalog import render_legacy as render
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--apps-root', required=True, type=Path)
@@ -41,6 +41,7 @@ class RehearsalTests(unittest.TestCase):
         with patch.dict(sys.modules, {'fcntl': SimpleNamespace(flock=lambda *a: None, LOCK_EX=1, LOCK_NB=4)} if os.name == 'nt' else {}):
             spec.loader.exec_module(self.job)
         self.job.ROOT = self.root
+        self.job.assert_queue_quiescent = lambda: None  # Queue behavior is tested separately.
         # fsync of directory handles is a Linux runtime operation.
         if os.name == 'nt':
             def write_json(path, value):
@@ -111,6 +112,7 @@ class RehearsalTests(unittest.TestCase):
     def test_plan_preserves_storage_secrets_images_and_gates_runtime(self):
         app = args.apps_root / 'ix-dev/community/erpnext'
         values = yaml.safe_load((app / 'ix_values.yaml').read_text())
+        values['images']['image']['tag'] = 'v16.51.1'  # Installed legacy baseline.
         values.update(yaml.safe_load((app / 'templates/test_values/basic-values.yaml').read_text()))
         values['ix_context'] = {'app_name': 'test', 'app_metadata': {'title': 'ERPNext', 'train': 'community'}}
         original = render(values, args.apps_root)

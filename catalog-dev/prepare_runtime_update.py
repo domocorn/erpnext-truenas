@@ -5,7 +5,7 @@ from pathlib import Path
 
 import yaml
 from prepare_healthcheck_update import prepare_update, RUNTIME
-from render_catalog import render
+from render_catalog import render_legacy as render
 
 
 def prepare_runtime_update(installed, apps_root):

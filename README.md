@@ -2,14 +2,25 @@
 
 Community development project. Not an official Frappe, TrueNAS, or HexOS product.
 
-## Status: first-install lab prototype
+## Current catalog work
+
+Native catalog installation, upgrade, migration-failure blocking, independent
+recovery and restart passed by user report. The tested normal lifecycle is now
+integrated into the catalog draft. Draft review preparation is complete; the
+approved CDN icon URL and full metadata validation remain pending.
+Start with [current next steps](catalog-dev/NEXT-STEPS.md). See the
+[workspace and folder guide](WORKSPACE.md) before committing or pushing.
+The catalog candidate has not been submitted or accepted by TrueNAS.
+
+## Standalone first-install lab generator
 
 This repository generates a standalone Compose YAML for a **new test installation**
 on TrueNAS 25.10.7. It includes MariaDB, Redis, Frappe configuration, automatic
 ERPNext site creation, workers, scheduler, websocket, and the web frontend.
 
-**Not yet a Discover catalog app or HexOS curation. Automated upgrades and existing
-site import are not implemented. Do not use this prototype for business data.**
+**Not published in Discover or curated for HexOS. This standalone generator does
+not implement the catalog lifecycle described above or import existing sites.
+Do not use this prototype for business data.**
 
 The generated YAML embeds the initializer, so TrueNAS does not need the repository
 files mounted into the app. It uses project-scoped Docker volumes, without fixed

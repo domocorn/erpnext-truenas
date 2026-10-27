@@ -18,9 +18,9 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined
 
 
 
-def render(values, apps_root):
+def render(values, apps_root, app_name='erpnext'):
     ROOT = Path(apps_root).resolve()
-    APP = ROOT / 'ix-dev/community/erpnext'
+    APP = ROOT / 'ix-dev/community' / app_name
     meta = yaml.safe_load((APP / 'app.yaml').read_text())
     version = meta['lib_version']
     library = ROOT / 'library' / version
@@ -39,6 +39,13 @@ def render(values, apps_root):
     env = Environment(loader=FileSystemLoader(APP / 'templates'), undefined=StrictUndefined, extensions=['jinja2.ext.do'])
     text = env.get_template('docker-compose.yaml').render(values=copy.deepcopy(values), ix_lib=SimpleNamespace(base=SimpleNamespace(render=render_module)))
     return json.loads(text)
+
+
+def render_legacy(values, apps_root):
+    """Historical custom-YAML fixtures only; never used by native catalog renders."""
+    values=copy.deepcopy(values)
+    values.setdefault('consts',{})['native_lifecycle']=False
+    return render(values,apps_root)
 
 
 def main():

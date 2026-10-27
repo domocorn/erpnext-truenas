@@ -1,59 +1,47 @@
-# Local Codex handoff — ERPNext for TrueNAS
+# Current handoff — 2026-10-26
 
-Open both local repositories in a VS Code workspace: `erpnext-truenas` and `apps`.
-Read each repository's AGENTS.md if present and apps/CONTRIBUTIONS.md before changes.
+Workspace: D:\Users\Dominic\Documents\_04 Tech & Coding\GitHub.
+Repositories: erpnext-truenas and apps, both on erpnext-catalog-draft. The user
+authorized committing and pushing both origin branches on 2026-10-26. GitHub CLI
+is authenticated as domocorn. Opening a PR is a separate action. No subagents requested.
+Production NAS untouched. Disposable VM: 172.22.237.80, truenas_admin,
+TrueNAS-25.10.7, catalog /mnt/.ix-apps/truenas_catalog. SSH password access is
+manual; no accepted unattended key. Never request passwords in chat.
 
-User: domocorn. GitHub project https://github.com/domocorn/erpnext-truenas.
-User forked/cloned truenas/apps. TrueNAS test target 25.10.7 in VMware Workstation
-on Windows with 32 GB RAM; VM allocated ~12 GB RAM. Production NAS exists and MUST
-remain untouched. Testing uses fictional business data in a disposable VM.
+USER-REPORTED VM LIFECYCLE GROUPS COMPLETE, including native install/patch/restart,
+actual migration failure blocking and independent recovery/restart. Working
+normal native app erpnext-native-test:18090 (1.0.0); its overlay was removed.
+Failed erpnext-native-failure-test:18091 stays Crashed/migrating; preserve guards.
+Recovered erpnext-native-recovery-test:18092 uses source ERPNext 16.51.0 and paused
+scheduling. Final verification reported original record/private attachment and
+synthetic encrypted value preserved, failed-migration record absent, independent
+storage/database password and failed source preserved; repeated after restart.
+Original backup and /mnt/labpool/erpnext-native-recovery-input-01 private copy stay.
 
-## Already tested by the user
+Normal native code is NOW integrated into apps/ix-dev/community/erpnext. Its final
+render matches the tested normal graph except x-notes. No lab failure/recovery
+hook ships in the default entry. Old custom-YAML generators/tests explicitly use
+render_catalog.render_legacy to preserve their historical protocol; native form
+defaults enable consts.native_lifecycle. Builder supports already integrated base.
+Native helpers embedded in macros are generated from catalog-dev canonical files.
 
-Standalone Compose generator automatically installs ERPNext with official images.
-Initialization, app/VM restart, unchanged configuration save, multiple isolated
-instances, database/public-private file restore, simulated pre-migration failure,
-guarded startup, same-version migration and real ERPNext 16.51.0→16.51.1 patch
-upgrade passed. Frappe was 16.52.0 before/after that patch. Results are user-reported;
-see docs/TEST-RESULTS.md. Encrypted credential decryption and recovery from an actual
-mid-patch database failure remain untested. No general major-upgrade claim.
+Final isolated official validation workspace:
+/var/tmp/erpnext-final-catalog-validation-01. Scoped schema, official library/hash,
+render, Compose and official metadata analysis passed; generated fields applied.
+The vendored library is unchanged and matches official output. Library2.3.17 is
+still the latest upstream2.x by current API check. Linux regression suites passed.
+All local Docker test stacks are stopped, with data preserved.
 
-## Existing development
+BLOCKER: full metadata generator rejects icon:''; actual expected ERPNext CDN
+URL is 404. Assets/erpnext-logo.png is an unmodified upstream candidate. Current
+CONTRIBUTIONS explicitly permits attaching artwork in a PR for reviewer CDN
+upload. Ready for DRAFT REVIEW, not a full-CI/merge-ready claim. No fake URL.
+Read docs/submission/SUBMISSION-PREPARATION.md and docs/submission/REVIEW-DRAFT.md. PR publication requires user
+publication instruction; after real icon URL, regenerate metadata/full validation.
 
-scripts/build.py generates private YAML, supports --erpnext-version, defaults to
-v16.51.1, and refuses output overwrite. scripts/prepare_upgrade.py reads the EXACT
-installed private YAML, preserving secrets/storage and generating offline backup,
-simulated failure, guarded resume and migration stages. --numbered-stages gives
-unique 01–05 filenames. Operation IDs and persisted .nas-upgrade-state.json prevent
-blind repeats. New operation plans must use the previous successful resume YAML.
-Never regenerate build.py output to modify an existing deployment's database password.
+Only exact reviewed ERPNext16.51.0->16.51.1 pins are enabled; general ERPNext
+upgrades, dependency upgrades, production/business-data readiness, automatic
+rollback and HexOS curation are not established. See ../docs/TEST-RESULTS.md.
 
-## Current milestone
-
-New catalog draft under apps/ix-dev/community/erpnext, local render tools under
-erpnext-truenas/catalog-dev. Uses native TrueNAS library 2.3.17. Form schema,
-metadata, image values, permissions, MariaDB dependency, port and portal metadata.
-Dataset-backed mounts require bootstrap of Frappe assets from image sites directory;
-bootstrap runs before mounting the real sites path into initializer/runtime.
-
-This catalog draft is FRESH INSTALL ONLY and version-locked: bootstrap blocks image
-tag changes. It is not catalog accepted, not update-ready and not HexOS curated.
-Do not transfer the prototype's upgrade promises to it without reengineering and
-retesting the different mount/permissions/deployment lifecycle.
-
-## Next work
-
-1. Read catalog-dev/README.md. Run local render checks, then user tests rendered
-   YAML as NEW erpnext-catalog-test on port 18084 with dedicated lab directories.
-2. Complete official middleware/schema/Docker catalog validation, official library
-   vendoring and metadata generation, icon and image policy review, worker healthchecks.
-3. Integrate safe catalog upgrades (stop/drain old workers, backup, migration gate,
-   new runtime). Prevent false claims about automatic rollback after DB patches.
-4. Check existing issues/PRs before a reviewed community-train submission.
-5. Later build a thin HexOS curation wrapper; community submissions are supported,
-   but official inclusion requires HexOS review. Verify current scripts/docs first.
-
-Keep generated YAML/passwords/site configs/backups private. Never stage .venv,
-generated/ or private data. User uses GitHub Desktop; explain which repository and
-branch receives each change. Do not push, submit PRs, or post messages without
-explicit user instructions. Provide meaningful tests and clear evidence limits.
+Previous detailed handoff and next-step status are preserved under docs/history/.
+Do not restart completed VM test groups or delete generated plans/recovery data.

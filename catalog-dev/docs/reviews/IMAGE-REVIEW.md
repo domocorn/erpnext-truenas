@@ -1,5 +1,16 @@
 # Image pinning review
 
+Update 2026-10-19: ERPNext tag-to-digest transition and independent recovery of
+its backup passed in the VM by user report. The recovery app also reported
+MariaDB config ID c1d04d5c27cfe84c85c8b11684d121b93df541ee2ccfdf62f72f2ac4ff37f762
+and Redis config ID 166f6f1437e3ae4bb78589379bc6e7937ea6e9fdd93fbb6cdf3a7fd509ca7c9e.
+Their RepoDigests match the table below. Registry inspection of each index's
+linux/amd64 manifest confirms those config IDs. Both Redis services agree.
+The catalog fresh-install defaults now include these digest pins, plus the
+verified ERPNext digest. No existing generated deployment was rewritten.
+Other architectures have not been runtime-tested. The original investigation
+below explains why a tagged deployment needs an explicit identity transition.
+
 The disposable WSL lab used linux/amd64 and pulled these tag digests:
 
 | Image | Observed repository digest |
@@ -8,8 +19,8 @@ The disposable WSL lab used linux/amd64 and pulled these tag digests:
 | mariadb:11.8 | sha256:f16d7a344413e519dff518f27bdb221388f84b0d274c97c4fb5f2cb0dc1b34fa |
 | redis:8.6-alpine | sha256:ac2da09bc822f325a9f68f533120b86fa39c1b8db46b3aa7c1bbea7fdfd4fcba |
 
-These are observed local identities, not proof of the digest already installed in
-the user's VM. Runtime tags were deliberately preserved in the healthcheck update.
+These were initially observed local identities; subsequent VM proof is recorded
+above. Runtime tags were deliberately preserved in the earlier healthcheck update.
 The permissions utility already has an immutable digest in ix_values.yaml.
 
 ERPNext bootstrap persists repository:tag as its image identity. Appending a

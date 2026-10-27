@@ -24,7 +24,18 @@ class CatalogTests(unittest.TestCase):
     def test_native_render_and_dependencies(self):
         doc = render(self.values, args.apps_root)
         services = doc['services']
-        self.assertEqual(len(services), 12)
+        expected_image = 'frappe/erpnext:' + self.values['images']['image']['tag']
+        self.assertIn('@sha256:', expected_image)
+        for name in ('bootstrap', 'initializer', 'backend', 'frontend', 'websocket', 'queue-short', 'queue-long', 'scheduler'):
+            self.assertEqual(services[name]['image'], expected_image)
+            if name != 'initializer':
+                self.assertEqual(services[name]['environment']['CATALOG_IMAGE'], expected_image)
+        self.assertEqual(len(services), 13)
+        self.assertEqual(services['upgrade-backup']['image'], self.values['images']['previous_image']['repository']+':'+self.values['images']['previous_image']['tag'])
+        self.assertEqual(services['initializer']['depends_on']['upgrade-backup']['condition'],'service_completed_successfully')
+        self.assertEqual(services['bootstrap']['command'],['bootstrap'])
+        self.assertEqual(services['initializer']['command'],['initialize'])
+        self.assertNotIn('CATALOG_NATIVE_FAILURE_ACK',yaml.safe_dump(doc))
         self.assertEqual([n for n, s in services.items() if s.get('ports')], ['frontend'])
         for name in ('backend', 'frontend', 'websocket', 'queue-short', 'queue-long', 'scheduler'):
             self.assertEqual(services[name]['depends_on']['initializer']['condition'], 'service_completed_successfully')
@@ -33,6 +44,8 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(services['db']['user'], '999:999')
         self.assertIn(0, services['frontend']['group_add'])
         self.assertEqual(services['permissions']['user'], '0:0')
+        for name in ('queue-short','queue-long'):
+            self.assertEqual(services[name]['stop_grace_period'],'120s')
         self.assertEqual(doc['x-portals'][0]['port'], 18084)
         self.assertEqual(services['frontend']['ports'][0]['target'], 8080)
         self.assertFalse(any(s.get('privileged') for s in services.values()))
