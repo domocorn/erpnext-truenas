@@ -1,3 +1,6 @@
+> Submitted on 2026-10-26: [TrueNAS apps draft PR #6267](https://github.com/truenas/apps/pull/6267), targeting master from domocorn:erpnext-catalog-draft.
+> This supersedes references below to an unposted PR or pending publication authorization. Maintainer review and an approved CDN icon URL remain outstanding; catalog inclusion has not been accepted. No further manual VM test group is requested now.
+
 # Current next steps — 2026-10-26
 
 The planned native lifecycle VM tests are complete by user report, including
