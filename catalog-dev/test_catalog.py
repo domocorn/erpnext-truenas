@@ -26,6 +26,18 @@ class CatalogTests(unittest.TestCase):
         services = doc['services']
         expected_image = 'frappe/erpnext:' + self.values['images']['image']['tag']
         self.assertIn('@sha256:', expected_image)
+        from patch_policy import SOURCE, TARGET, SOURCE_VERSION, TARGET_VERSION, validate_patch, SOURCE_DIGEST, SOURCE_ID
+        self.assertEqual(expected_image, TARGET)
+        self.assertEqual(self.values['images']['previous_image']['repository'] + ':' + self.values['images']['previous_image']['tag'], SOURCE)
+        metadata = yaml.safe_load((APP / 'app.yaml').read_text())
+        self.assertEqual(metadata['app_version'], TARGET_VERSION)
+        self.assertNotEqual(SOURCE_VERSION, TARGET_VERSION)
+        policy = next(config['content'] for config in doc['configs'].values() if 'def validate_patch(' in config['content'])
+        namespace = {}
+        exec(compile(policy, '<rendered-patch-policy>', 'exec'), namespace)
+        namespace['validate_patch'](SOURCE, TARGET, SOURCE_DIGEST, SOURCE_ID)
+        with self.assertRaises(RuntimeError):
+            namespace['validate_patch'](TARGET, SOURCE, SOURCE_DIGEST, SOURCE_ID)
         for name in ('bootstrap', 'initializer', 'backend', 'frontend', 'websocket', 'queue-short', 'queue-long', 'scheduler'):
             self.assertEqual(services[name]['image'], expected_image)
             if name != 'initializer':

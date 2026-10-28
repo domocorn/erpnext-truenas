@@ -48,11 +48,11 @@ class NativeTests(rehearsal_tests.RehearsalTests):
         self.source_state()
         baked=self.root/'baked-assets'; baked.mkdir()
         (self.root/'assets').symlink_to(baked,target_is_directory=True)
-        version=SimpleNamespace(__version__='16.51.0')
+        version=SimpleNamespace(__version__='16.51.1')
         with patch.dict(sys.modules,{'erpnext':version}),patch.object(self.job.subprocess,'run',self.command),patch.object(patch_target,'BAKED',baked):
             native.backup(self.root)
             self.assertEqual(self.state()['status'],'backed_up')
-            version.__version__='16.51.1'
+            version.__version__='16.52.1'
             native.initialize(self.root,lambda:None)
             native.backup(self.root)
             native.initialize(self.root,lambda:None)
@@ -64,17 +64,17 @@ class NativeTests(rehearsal_tests.RehearsalTests):
     def test_partial_native_migration_blocks_backup_and_resume(self):
         native=self.native()
         self.source_state()
-        version=SimpleNamespace(__version__='16.51.0')
+        version=SimpleNamespace(__version__='16.51.1')
         initialize=Mock()
         with patch.dict(sys.modules,{'erpnext':version}),patch.object(self.job.subprocess,'run',self.command):
             native.backup(self.root)
-            version.__version__='16.51.1'
+            version.__version__='16.52.1'
             with patch.object(self.job.subprocess,'run',side_effect=subprocess.CalledProcessError(1,'bench')):
                 with self.assertRaises(subprocess.CalledProcessError): native.initialize(self.root,initialize)
             self.assertEqual(self.state()['status'],'migrating')
-            version.__version__='16.51.0'
-            with self.assertRaises(RuntimeError): native.backup(self.root)
             version.__version__='16.51.1'
+            with self.assertRaises(RuntimeError): native.backup(self.root)
+            version.__version__='16.52.1'
             with self.assertRaises(RuntimeError): native.initialize(self.root,initialize)
         initialize.assert_not_called()
         self.assertEqual((self.root/'.catalog-image').read_text(),SOURCE)
@@ -84,7 +84,7 @@ class NativeTests(rehearsal_tests.RehearsalTests):
         (self.root/'.catalog-image').write_text(TARGET)
         with self.assertRaises(RuntimeError): native.bootstrap(self.root)
         os.environ['CATALOG_IMAGE']=TARGET
-        with patch.dict(sys.modules,{'erpnext':SimpleNamespace(__version__='16.51.1')}):
+        with patch.dict(sys.modules,{'erpnext':SimpleNamespace(__version__='16.52.1')}):
             with self.assertRaises(RuntimeError): native.initialize(self.root,Mock())
 
 

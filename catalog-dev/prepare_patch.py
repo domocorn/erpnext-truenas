@@ -1,4 +1,4 @@
-"""Prepare the explicit v16.51.0-to-v16.51.1 graph on an isolated patch-test app."""
+"""Prepare the explicit v16.51.1-to-v16.52.1 graph on an isolated patch-test app."""
 import copy
 from pathlib import Path
 from patch_policy import SOURCE, TARGET, SOURCE_DIGEST, SOURCE_ID

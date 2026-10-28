@@ -3,7 +3,7 @@ import argparse
 from pathlib import Path
 import shutil
 import yaml
-from patch_policy import SOURCE,TARGET
+from patch_policy import SOURCE,TARGET,SOURCE_VERSION,TARGET_VERSION
 
 ROOT=Path(__file__).resolve().parent
 APP_NAME='erpnext-native-lab'
@@ -19,7 +19,7 @@ def build(apps_root, output, role, profile='normal'):
     shutil.copytree(base,destination,ignore=shutil.ignore_patterns('library','rendered','__pycache__'))
     metadata=yaml.safe_load((destination/'app.yaml').read_text())
     metadata.update(name=app_name,title='ERPNext Native '+({'normal':'Lab','failure':'Failure Lab','recovery':'Recovery Lab'}[profile]),version='0.9.0' if role=='source' else '1.0.0',
-        app_version='16.51.0' if role=='source' else '16.51.1')
+        app_version=SOURCE_VERSION if role=='source' else TARGET_VERSION)
     (destination/'app.yaml').write_text(yaml.safe_dump(metadata,sort_keys=False))
     values=yaml.safe_load((destination/'ix_values.yaml').read_text())
     values['images']['image']['tag']=(SOURCE if role=='source' else TARGET).split(':',1)[1]
