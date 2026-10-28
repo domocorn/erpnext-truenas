@@ -1,3 +1,5 @@
+> Publication authorized: the tested 16.52.1 update is being fast-forwarded into both submission branches and pushed, with PR #6267 description/test evidence updated. This supersedes earlier local-only restrictions. PR remains a draft; full CI/icon and review are pending.
+
 > User confirmed browser login and the expected version on the upgraded test app. Candidate acceptance is complete for the documented scope; upstream icon/CI and review remain pending.
 
 > Automated update testing: [2026-10-28 report](docs/reviews/UPDATE-16.52.1-AUTOMATED-TESTS.md). Native install/upgrade/failure/recovery, local Docker and actual VM reboot checks passed. Read the report before doing more tests.
