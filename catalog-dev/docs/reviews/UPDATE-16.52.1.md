@@ -1,3 +1,5 @@
+> Subsequent automated testing is recorded in [UPDATE-16.52.1-AUTOMATED-TESTS.md](UPDATE-16.52.1-AUTOMATED-TESTS.md). The initial deferred-test and no-VM-operation statements below describe the groundwork commit only.
+
 # ERPNext 16.52.1 update groundwork - 2026-10-28
 
 Local-only branches in both repositories: `erpnext-catalog-update-16.52.1`.

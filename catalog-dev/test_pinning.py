@@ -64,7 +64,8 @@ class PinningTests(rehearsal_tests.RehearsalTests):
         args = rehearsal_tests.args
         app = args.apps_root / 'ix-dev/community/erpnext'
         values = yaml.safe_load((app/'ix_values.yaml').read_text())
-        values['images']['image']['tag'] = 'v16.51.1'  # Installed legacy baseline.
+        values['images']['image']['tag'] = values['images']['image']['tag'].split('@')[0]
+        self.image = values['images']['image']['repository'] + ':' + values['images']['image']['tag']
         values.update(yaml.safe_load((app/'templates/test_values/basic-values.yaml').read_text()))
         for name in ('sites', 'logs', 'db_data', 'queue_data'):
             values['storage'][name] = {'type':'host_path','host_path_config':{

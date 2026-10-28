@@ -1,3 +1,5 @@
+> Automated update testing: [2026-10-28 report](docs/reviews/UPDATE-16.52.1-AUTOMATED-TESTS.md). Native install/upgrade/failure/recovery, local Docker and actual VM reboot checks passed. Read the report before doing more tests.
+
 > Current local update work: [ERPNext 16.52.1 candidate](docs/reviews/UPDATE-16.52.1.md). Local-only update branches; submitted PR unchanged. No Docker/VM acceptance tests yet. This note supersedes baseline-only next-step statements below.
 
 > Submitted on 2026-10-26: [TrueNAS apps draft PR #6267](https://github.com/truenas/apps/pull/6267), targeting master from domocorn:erpnext-catalog-draft.
