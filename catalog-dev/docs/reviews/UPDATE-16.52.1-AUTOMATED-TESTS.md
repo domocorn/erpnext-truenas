@@ -70,7 +70,7 @@ instead of hardcoding 16.51.1. No runtime guard was weakened.
 - Generated browser logins are saved outside Git at
   `C:\Users\domin\.ssh\erpnext-testvm-test-logins.json`; no passwords are in this report.
 
-The remaining human check is visual inspection of the upgraded Desk in a browser.
+The user subsequently reported successful browser login to the upgraded test app and confirmed the expected version.
 HTTP authentication/assets and server-side fixture assertions are automated;
 interactive browser JavaScript and real business workflows were not exercised.
 Full official metadata/CI still needs the approved CDN icon URL and a later full
@@ -87,6 +87,7 @@ No user action or public follow-up was sent automatically.
 - Earlier native recovery remains RUNNING, earlier native failure remains CRASHED,
   and earlier normal native app remains STOPPED. No prior test data was removed.
 
-When convenient, use the local login file to visually check the upgraded app on
-18093. No repeated shell-command test group is needed. Interactive browser checks,
-full official CI/icon completion and maintainer approval remain outstanding.
+User-reported browser login and version confirmation on the upgraded app (port
+18093) passed. No repeated shell-command test group is requested. Full interactive
+business-workflow testing is not claimed. Full official CI/icon completion and
+maintainer approval remain outstanding.
