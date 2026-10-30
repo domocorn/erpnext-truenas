@@ -1,3 +1,5 @@
+> Catalog PR architecture changed after review: see [thin integration review](catalog-dev/docs/reviews/THIN-INTEGRATION-REVIEW.md). Older guarded lifecycle instructions apply only to the archive branch, not the current submission. Production is unchanged.
+
 # ERPNext for TrueNAS
 
 Community development project. Not an official Frappe, TrueNAS, or HexOS product.

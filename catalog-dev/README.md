@@ -1,3 +1,5 @@
+> Current architecture: [thin upstream integration](docs/reviews/THIN-INTEGRATION-REVIEW.md), replacing the guarded framework after maintainer feedback. Manual site setup/operations; no app-internal scripts shipped. Old acceptance results are historical and do not validate this rewrite. Runtime tests pending because the VM is unreachable and WSL cannot start.
+
 # Catalog development
 
 This directory contains the ERPNext catalog development tools and evidence. The
