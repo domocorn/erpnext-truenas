@@ -1,3 +1,5 @@
+> Published thin revision: apps commit `6ee726510ddfb436734f858b54c0c13f37943aa1`, seven tracked app files. Reviewer reply: https://github.com/truenas/apps/pull/6267#issuecomment-6525202369 . PR description updated; runtime validation remains pending. Archive branches preserve the prior implementation.
+
 > Current architecture: [thin upstream integration](docs/reviews/THIN-INTEGRATION-REVIEW.md), replacing the guarded framework after maintainer feedback. Manual site setup/operations; no app-internal scripts shipped. Old acceptance results are historical and do not validate this rewrite. Runtime tests pending because the VM is unreachable and WSL cannot start.
 
 > Published: tested 16.52.1 update pushed to submission and update branches in both repositories. PR #6267 now targets apps commit 6e06135e8711956392f602cb01ce70209270b916; description and test evidence updated. Review request: https://github.com/truenas/apps/pull/6267#issuecomment-6472245993 . This supersedes earlier local-only restrictions. PR remains a draft; full CI/icon and review are pending.

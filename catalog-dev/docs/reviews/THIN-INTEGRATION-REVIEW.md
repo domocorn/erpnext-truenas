@@ -58,3 +58,6 @@ and manual site-setup model, then test fresh install, manual site creation,
 login/assets, job execution, backup and unchanged restart in new isolated storage.
 Any manual upgrade/restore support needs its own upstream-procedure rehearsal.
 Keep the PR a draft pending that work, full CI and approved artwork.
+
+Publication: thin revision pushed as apps commit `6ee726510ddfb436734f858b54c0c13f37943aa1`.
+Reviewer response: https://github.com/truenas/apps/pull/6267#issuecomment-6525202369 .
